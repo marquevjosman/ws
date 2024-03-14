@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "musa"
+version = "0.1.0"
+description = ""
+authors = ["José Martínez <marquevjosman@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+scipy = "^1.12.0"
+numpy = "^1.26.4"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
