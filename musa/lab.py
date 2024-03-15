@@ -1,2 +1,5 @@
-print(0.5 * 2)
-print(2 * 0.2)
+from musa.scales import genscale, printfracs, extscale
+from fractions import Fraction
+
+s = genscale(length=3)
+printfracs(s)
