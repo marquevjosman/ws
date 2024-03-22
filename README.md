@@ -1,2 +1,2 @@
-# workspace
+# ws
 General projects workspace
