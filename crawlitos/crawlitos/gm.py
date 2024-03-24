@@ -1,7 +1,7 @@
 import pygame
 from crawlitos.globals import *
 from crawlitos.raycast import Camera
-from crawlitos.visuals import VisualsManager, Rectangle
+from crawlitos.visuals import VisualsManager, Triangle
 import numpy as np
 
 
@@ -28,11 +28,13 @@ class GameManager:
         pixels = pygame.surfarray.pixels3d(self.origsurf)
         # self.pixels[0, 0] = (255, 255, 255)
         self.vm = VisualsManager()
-        self.camera = Camera(self, pixels, 24, np.array((0, 0, 0)), 12.0, 60.0)
-        w = 1.0
-        h = 1.0
-        z = 40.0
-        self.vm.append(Rectangle((-w, -h, z), (w, -h, z), (w, h, z)))
+        self.camera = Camera(self, pixels, 24.0, 12.0, 60.0)
+        x = 12.0
+        y = 12.0
+        z = 6.0
+        tri = Triangle((x, -y, -z), (x, y, -z), (x, y, z))
+        # print(tri)
+        self.vm.append(tri)
 
     def run(self):
         self.loop()
@@ -52,7 +54,7 @@ class GameManager:
         self.enddraw()
 
     def startdraw(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((64, 16, 32))
 
     def enddraw(self):
         pygame.transform.scale(self.origsurf, self.scalsurf.get_size(), self.scalsurf)

@@ -32,6 +32,9 @@ class Triangle:
     def vtype(self):
         return VisualType.Triangle
 
+    def __str__(self) -> str:
+        return f"triangle({self.a}, {self.b}, {self.c})"
+
 
 class Rectangle:
     def __init__(self, a, b, c) -> None:
