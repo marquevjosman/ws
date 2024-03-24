@@ -50,7 +50,7 @@ class GameManager:
 
     def draw(self):
         self.startdraw()
-        self.camera.draw()
+        #self.camera.draw()
         self.enddraw()
 
     def startdraw(self):
@@ -65,4 +65,5 @@ class GameManager:
         while self.running:
             self.update()
             self.draw()
-            self.clock.tick(30)
+            self.clock.tick(60)
+            print(self.clock.get_fps())
