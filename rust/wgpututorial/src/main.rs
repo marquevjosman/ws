@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::borrow::Cow;
+use std::{borrow::Cow, time::Instant};
 
 use wgpu::{
     DeviceDescriptor, Features, FragmentState, Limits, MultisampleState, PipelineLayoutDescriptor,
@@ -17,7 +17,7 @@ async fn main() {
     env_logger::init();
     println!("wgpu!");
     let event_loop = EventLoop::new().unwrap();
-    event_loop.set_control_flow(ControlFlow::Poll);
+    event_loop.set_control_flow(ControlFlow::Wait);
     let inner_size = PhysicalSize {
         height: 360,
         width: 720,
@@ -50,9 +50,8 @@ async fn main() {
         )
         .await
         .unwrap();
-    let size = window.inner_size();
     let config = surface
-        .get_default_config(&adapter, size.width, size.height)
+        .get_default_config(&adapter, inner_size.width, inner_size.height)
         .unwrap();
     surface.configure(&device, &config);
     let shader = device.create_shader_module(ShaderModuleDescriptor {
@@ -89,6 +88,8 @@ async fn main() {
         multisample: MultisampleState::default(),
         multiview: None,
     });
+    let window = &window;
+    let mut before = Instant::now();
     event_loop
         .run(move |event, elwt| match event {
             Event::WindowEvent {
@@ -102,7 +103,42 @@ async fn main() {
                 event: WindowEvent::RedrawRequested,
                 ..
             } => {
-                log::debug!("RedrawRequested");
+                let now = Instant::now();
+                let elapsed = now - before;
+                before = now;
+                println!("RedrawRequested {:?}", elapsed);
+                let frame = surface.get_current_texture().unwrap();
+                let view = frame
+                    .texture
+                    .create_view(&wgpu::TextureViewDescriptor::default());
+                let mut encoder =
+                    device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
+                {
+                    let mut rpass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                        label: None,
+                        color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                            view: &view,
+                            resolve_target: None,
+                            ops: wgpu::Operations {
+                                load: wgpu::LoadOp::Clear(wgpu::Color {
+                                    r: 0.05,
+                                    g: 0.062,
+                                    b: 0.08,
+                                    a: 1.0,
+                                }),
+                                store: wgpu::StoreOp::Store,
+                            },
+                        })],
+                        depth_stencil_attachment: None,
+                        timestamp_writes: None,
+                        occlusion_query_set: None,
+                    });
+                    rpass.set_pipeline(&render_pipeline);
+                    rpass.draw(0..3, 0..1);
+                }
+                queue.submit(Some(encoder.finish()));
+                frame.present();
+                window.request_redraw()
             }
             _ => (),
         })
