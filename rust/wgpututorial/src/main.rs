@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use std::{borrow::Cow, time::Instant};
 
+use env_logger::Env;
 use wgpu::{
     DeviceDescriptor, Features, FragmentState, Limits, MultisampleState, PipelineLayoutDescriptor,
     PowerPreference::HighPerformance, PrimitiveState, RenderPipelineDescriptor,
@@ -14,8 +15,7 @@ use winit::{
 };
 #[tokio::main]
 async fn main() {
-    env_logger::init();
-    println!("wgpu!");
+    env_logger::Builder::from_env(Env::default().default_filter_or("warn")).init();
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(ControlFlow::Wait);
     let inner_size = PhysicalSize {
@@ -96,7 +96,7 @@ async fn main() {
                 event: WindowEvent::CloseRequested,
                 ..
             } => {
-                println!("The close button was pressed; stopping");
+                log::info!("The close button was pressed; stopping");
                 elwt.exit();
             }
             Event::WindowEvent {
@@ -106,7 +106,7 @@ async fn main() {
                 let now = Instant::now();
                 let elapsed = now - before;
                 before = now;
-                println!("RedrawRequested {:?}", elapsed);
+                log::info!("RedrawRequested {:?}", elapsed);
                 let frame = surface.get_current_texture().unwrap();
                 let view = frame
                     .texture
